@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b7285">
+    <title>PulseLink SpO2 Monitor</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="device-panel" aria-label="Bluetooth connection">
+        <div>
+          <p class="eyebrow">ESP32-C3 + MAX30102</p>
+          <h1>PulseLink SpO2 Monitor</h1>
+          <p class="subtitle">Connect your oximeter over Bluetooth and watch live oxygen, pulse, and battery readings on your phone.</p>
+        </div>
+
+        <div class="connection-card">
+          <div class="status-row">
+            <span class="status-dot" id="statusDot" aria-hidden="true"></span>
+            <div>
+              <p class="status-label" id="connectionState">Not connected</p>
+              <p class="status-name" id="deviceName">No device selected</p>
+            </div>
+          </div>
+          <button class="primary-button" id="connectButton" type="button">
+            <span aria-hidden="true">⌁</span>
+            Connect Bluetooth
+          </button>
+          <button class="ghost-button" id="disconnectButton" type="button" disabled>Disconnect</button>
+        </div>
+      </section>
+
+      <section class="people-section" aria-label="Person records">
+        <form class="person-card" id="personForm">
+          <div class="section-heading">
+            <h2>Person Records</h2>
+            <span class="record-count" id="recordCount">0 saved</span>
+          </div>
+          <label>
+            Active person
+            <select id="personSelect"></select>
+          </label>
+          <div class="person-actions">
+            <label>
+              New person name
+              <input id="personNameInput" autocomplete="name" placeholder="Example: Rahul">
+            </label>
+            <button class="primary-button compact-button" type="submit">Add Person</button>
+          </div>
+          <p class="settings-note">Bluetooth readings are saved under the active person name on this phone/browser.</p>
+        </form>
+
+        <article class="records-card">
+          <div class="section-heading">
+            <h2>Saved Readings</h2>
+            <button class="ghost-button compact-button" id="exportButton" type="button">Export CSV</button>
+          </div>
+          <ol id="recordsList"></ol>
+        </article>
+      </section>
+
+      <section class="metrics-grid" aria-label="Live readings">
+        <article class="metric-card spo2-card">
+          <div class="metric-topline">
+            <span>SpO2</span>
+            <span class="metric-unit">%</span>
+          </div>
+          <strong id="spo2Value">--</strong>
+          <p id="spo2Message">Waiting for sensor data</p>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-topline">
+            <span>Heart Rate</span>
+            <span class="metric-unit">BPM</span>
+          </div>
+          <strong id="heartRateValue">--</strong>
+          <p id="heartRateMessage">Place finger on MAX30102</p>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-topline">
+            <span>Battery</span>
+            <span class="metric-unit">3.7V LiPo</span>
+          </div>
+          <strong id="batteryValue">--</strong>
+          <p id="batteryMessage">TP4056 charging module</p>
+        </article>
+      </section>
+
+      <section class="chart-section" aria-label="Recent SpO2 samples">
+        <div class="section-heading">
+          <h2>Recent Samples</h2>
+          <p id="lastUpdated">No readings yet</p>
+        </div>
+        <canvas id="spo2Chart" width="900" height="260" aria-label="SpO2 history chart"></canvas>
+      </section>
+
+      <section class="settings-grid" aria-label="Bluetooth settings and log">
+        <form class="settings-card" id="settingsForm">
+          <div class="section-heading">
+            <h2>BLE Settings</h2>
+            <button class="icon-button" type="submit" title="Save BLE settings" aria-label="Save BLE settings">✓</button>
+          </div>
+          <label>
+            Device name prefix
+            <input id="namePrefixInput" autocomplete="off" value="Oximeter">
+          </label>
+          <label>
+            Service UUID
+            <input id="serviceUuidInput" autocomplete="off" value="6e400001-b5a3-f393-e0a9-e50e24dcca9e">
+          </label>
+          <label>
+            Notify characteristic UUID
+            <input id="characteristicUuidInput" autocomplete="off" value="6e400003-b5a3-f393-e0a9-e50e24dcca9e">
+          </label>
+          <p class="settings-note">Default UUIDs use the common Nordic UART BLE pattern. Send JSON such as {"spo2":98,"bpm":76,"battery":87} from your ESP32-C3.</p>
+        </form>
+
+        <article class="log-card">
+          <div class="section-heading">
+            <h2>Device Log</h2>
+            <button class="icon-button" id="clearLogButton" type="button" title="Clear log" aria-label="Clear log">×</button>
+          </div>
+          <ol id="logList"></ol>
+        </article>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
